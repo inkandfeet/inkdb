@@ -11,61 +11,75 @@ Provides two data enpoints:
 
 ### Stupid simple syntax.
 
+
+#### Get
 ```js
 inkdb.common.foo
 "bar"
 
-inkdb.common.ab_tests.button_color
+inkdb.common.theme.daily_button_color
 "#454545"
 ```
 
+#### Set
+
 ```js
-inkdb.user.bar
+> inkdb.common.foo = "I want to override this"
+{'error': 'Common is read-only.'}
+
+> inkdb.common.foo
+"bar"
+
+> inkdb.user.bar
 {'error': 'User not authenticated'}
 
-// Authenticates with server.  If user encryption is server-managed, securely fetches user's encryption key, and decrypts.
-inkdb.user.authenticate('myservermanagedusername', 'mypassword')
+// Authenticates with server.  If user encryption is server-managed,
+// securely fetches user's encryption key, and decrypts.
+> inkdb.authenticate('myusername', 'mypassword')
 
-inkdb.user
 
+> inkdb.user
 {
     "foo": "Hi, I'm data."
 }
 
-inkdb.user.bar.set("ack");
+inkdb.user.bar = "ack";
 
-inkdb.user
-
+> inkdb.user
 {
     "foo": "Hi, I'm data.",
     "bar": "ack",
 }
 ```
 
+#### User Registration
 
-`inkdb.user.register('mynewusername', 'mypassword')`
+```js
+inkdb.register('mynewusername', 'mypassword')
+inkdb.authenticate('myusername', 'mypassword')
+// Creates account and authenticates.
+````
 
 
+#### Zero-knowledge encryption.
 ```js 
-// Zero-knowledge encryption.
-
 // Authenticates with a server.  If user encryption user-managed, simply fetches the encrypted data.
-inkdb.user.authenticate('myservermanagedusername', 'mypassword')
+> inkdb.authenticate('myusername', 'mypassword')
 
-inkdb.user.bar
+> inkdb.user.bar
 {"error": "Zero-knowledge encryption enabled, and user vault is not decrypted."}
 
 // Decrypt zero-knowledge encrypted data
-inkdb.user.decrypt(prompt("What is your vault encryption key"?))
+> inkdb.user.decrypt(prompt("What is your vault encryption key"?))
 
-inkdb.user.bar
+> inkdb.user.bar
 'ack'
 
 // Enable zero-knowledge
-inkdb.user.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
+> inkdb.user.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 
 // Disable zero-knowledge
-inkdb.user.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
+> inkdb.user.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 ```
 
 
