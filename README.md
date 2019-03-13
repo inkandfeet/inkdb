@@ -29,7 +29,7 @@ inkdb.user.bar
 
 ```js
 inkdb.user.authenticate('myservermanagedusername', 'mypassword')
-# Authenticates with server.  If user encryption is server-managed, securely fetches user's encryption key, and decrypts.
+// Authenticates with server.  If user encryption is server-managed, securely fetches user's encryption key, and decrypts.
 ```
 
 
@@ -43,13 +43,12 @@ inkdb.user
 inkdb.user.bar.set('ack');
 
 inkdb.user
+
 {
     'foo': 'Hi, I'm data.',
     'bar': 'ack',
 }
 ```
-
-
 
 
 `inkdb.user.register('mynewusername', 'mypassword')`
@@ -182,3 +181,10 @@ In transit, over TLS/SSL:
 - The server's public key
 - The client's default public/private pair
 - The client's encrypted zeropub/zeropriv
+
+In transit, over insecured HTTP:
+- Nothing
+
+In transit between server and database, over TLS/SSL:
+- Each client's default public/private pair, encrypted with the server's private key
+- Zero-knowledge clients' zeropub/zeropair, encrypted with a passphrase that the server doesn't know.
