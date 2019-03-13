@@ -1,17 +1,15 @@
-# Inkdb
+# inkdb
 
 An authenticated, realtime, key-value microstorage that's synced across devices.
 
-User data is encrypted by default with a server-managed key, and can be zero-knowledge encrypted by the user.
+Backend-agnostic.  Supports multiple backends (firebase, dynamodb, hasura/postgres, etc).
 
-Site data is completely anonymous, and read-only.
+Provides two data enpoints:
+- `inkdb.common` Anonymous, public, read-only.
+- `inkdb.user` Authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
 
-Defaults to two data connections: 
 
-- `inkdb.common` (anonymous, read-only,)
-- `inkdb.user` (authenticated, private, read-write).
-
-Stupid simple syntax.
+### Stupid simple syntax.
 
 ```js
 inkdb.common.foo
@@ -62,49 +60,23 @@ inkdb.user.authenticate('myservermanagedusername', 'mypassword')
 inkdb.user.bar
 {"error": "Zero-knowledge encryption enabled, and user vault is not decrypted."}
 
-
 # Decrypt zero-knowledge encrypted data
-`inkdb.user.decrypt('myzeroknowledgeencryptionkey')
+inkdb.user.decrypt(prompt("What is your vault encryption key"?))
+
 inkdb.user.bar
 'ack'
 
 # Enable zero-knowledge
-`inkdb.user.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')`
+inkdb.user.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 
 # Disable zero-knowledge
-`inkdb.user.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
+inkdb.user.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 ```
 
-Backend-agnostic.  Supports multiple backends (firebase, dynamodb, hasura/postgres, etc).
-
-- uid (PBKDF2)
-    - k (encrypted)
-        - v (encrypted)
 
 
 
-Tech-spec:
-
-Authentication:
-- Python django app
-
-Realtime data sync
- and encryption:
-- username/password used to generate a public/private key pair.
-- 
-
-Tech notes:
-https://www.w3.org/TR/WebCryptoAPI/
-https://caniuse.com/#search=web%20crypto
-https://github.com/diafygi/webcrypto-examples
-https://blog.engelke.com/2015/02/14/deriving-keys-from-passwords-with-webcrypto/
-
-https://github.com/brix/crypto-js
-https://github.com/melanke/Watch.JS/
-
-
-
-Path:
+## Data flow and security
 
 Given:
 1. The server has a public/private key pair.
@@ -188,3 +160,13 @@ In transit, over insecured HTTP:
 In transit between server and database, over TLS/SSL:
 - Each client's default public/private pair, encrypted with the server's private key
 - Zero-knowledge clients' zeropub/zeropair, encrypted with a passphrase that the server doesn't know.
+
+
+
+Tech notes:
+- https://www.w3.org/TR/WebCryptoAPI/
+- https://caniuse.com/#search=web%20crypto
+- https://github.com/diafygi/webcrypto-examples
+- https://blog.engelke.com/2015/02/14/deriving-keys-from-passwords-with-webcrypto/
+- https://github.com/brix/crypto-js
+- https://github.com/melanke/Watch.JS/
