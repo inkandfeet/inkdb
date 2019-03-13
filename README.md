@@ -94,15 +94,28 @@ inkdb.change_password('mynewpassword')  // Only works if authenticated, obviousl
 
 ## Data flow and security
 
+### Open Questions
+
+- Do we need to even do pub/private pairs?  We only have one real party who needs access, symmetric encryption might be a better fit.
+- Is it worth bothering to use the server's key pair to verify, since we implicitly trust SSL?  Protection against heartbleed-type attacks, sure.  But worth the cost?
+
+
+### Data flow
+
 Given:
-1. The server has a public/private key pair.
-2. The client is given the server's public key on page load.
+- The server has a secure public/private key pair.
+- The client is passed the server's public key via SSL
 
 Account Creation:
 1. Create account on server for user from username/pass
-2. Generate pub/priv pair for user on server.  Encrypt with server's public key, store in db.
-3. Return pub/priv via SSL.
+2. Generate pub/priv pair for user on server.  Encrypt with server's private key, store in db.
+3. Return pub/priv via SSL.  Verify using server's public key (needed since we trust SSL?).
 4. Store pub/priv in browser local storage
+
+Using a second device/logging in:
+1. Authenticate with the server over SSL.
+2. Recieve pub/priv pair via SSL and session token
+3. Follow 1-5 above.
 
 Data access/reads and writes:
 1. Access user data on data store at /publickey
@@ -111,16 +124,11 @@ Data access/reads and writes:
 4. On changes (and first run), recursively decrypt the tree with the user's private key.
 5. On user data add, save to local sync'd object, see in watch, encrypt with the public key and put into data store.
 
-Using a second device/logging in:
-1. Authenticate with the server over SSL.
-2. Recieve pub/priv pair via SSL and session token
-3. Follow 1-5 above.
-
 Zero-knowledge path:
-1. Follow 1-3 from the above.
+1. Follow 1-4 from the standard account list.
 2. Generate local zero-knowledge zeropub/zeropriv
 3. Ask the user to provide a zero-knowledge password.
-4. Encrypt local zeropub/zeropriv pair using the zero-knowledge-pass.
+4. Encrypt local zeropub/zeropriv pair using the PBKDF(zero-knowledge-pass).
 5. Send encrypted zeropair to server, save.
 6. (Optional) Save working zero-knowledge pair into localstorage (If user chooses when entering password. Default to not save.)
 7. Use the zero-knowledge pair instead of passed pair to encrypt/decrypt.
