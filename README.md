@@ -22,29 +22,23 @@ inkdb.common.ab_tests.button_color
 ```js
 inkdb.user.bar
 {'error': 'User not authenticated'}
-```
 
-
-```js
-inkdb.user.authenticate('myservermanagedusername', 'mypassword')
 // Authenticates with server.  If user encryption is server-managed, securely fetches user's encryption key, and decrypts.
-```
+inkdb.user.authenticate('myservermanagedusername', 'mypassword')
 
-
-```js
 inkdb.user
 
 {
-    'foo': 'Hi, I'm data.'
+    "foo": "Hi, I'm data."
 }
 
-inkdb.user.bar.set('ack');
+inkdb.user.bar.set("ack");
 
 inkdb.user
 
 {
-    'foo': 'Hi, I'm data.',
-    'bar': 'ack',
+    "foo": "Hi, I'm data.",
+    "bar": "ack",
 }
 ```
 
@@ -53,23 +47,24 @@ inkdb.user
 
 
 ```js 
-# Zero-knowledge encryption.
+// Zero-knowledge encryption.
+
+// Authenticates with a server.  If user encryption user-managed, simply fetches the encrypted data.
 inkdb.user.authenticate('myservermanagedusername', 'mypassword')
 
-# Authenticates with a server.  If user encryption user-managed, simply fetches the encrypted data.
 inkdb.user.bar
 {"error": "Zero-knowledge encryption enabled, and user vault is not decrypted."}
 
-# Decrypt zero-knowledge encrypted data
+// Decrypt zero-knowledge encrypted data
 inkdb.user.decrypt(prompt("What is your vault encryption key"?))
 
 inkdb.user.bar
 'ack'
 
-# Enable zero-knowledge
+// Enable zero-knowledge
 inkdb.user.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 
-# Disable zero-knowledge
+// Disable zero-knowledge
 inkdb.user.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 ```
 
