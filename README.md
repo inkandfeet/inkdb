@@ -2,7 +2,9 @@
 
 An authenticated, realtime, key-value microstorage that's synced across devices.
 
-Backend-agnostic.  Supports multiple backends (firebase, dynamodb, hasura/postgres, etc).
+Realtime backend-agnostic.  Supports multiple backends (firebase, dynamodb, hasura/postgres, etc).
+
+Bundled authentication backend is Python/Django, but it'd be simple to port this to Rails, etc.
 
 Provides two data enpoints:
 - `inkdb.common` Anonymous, public, read-only.
