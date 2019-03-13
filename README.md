@@ -55,10 +55,15 @@ inkdb.user.bar = "ack";
 #### User Registration
 
 ```js
-inkdb.register('mynewusername', 'mypassword')
-inkdb.authenticate('myusername', 'mypassword')
-// Creates account and authenticates.
-````
+inkdb.register('mynewusername', 'mynewpassword')
+inkdb.authenticate('mynewusername', 'mynewpassword')
+```
+
+#### Change Password
+
+```js
+inkdb.change_password('mynewpassword')  // Only works if authenticated, obviously.
+```
 
 
 #### Zero-knowledge encryption.
@@ -91,7 +96,7 @@ Given:
 1. The server has a public/private key pair.
 2. The client is given the server's public key on page load.
 
-Create:
+Account Creation:
 1. Create account on server for user from username/pass
 2. Generate pub/priv pair for user on server.  Encrypt with server's public key, store in db.
 3. Return pub/priv via SSL.
@@ -104,11 +109,10 @@ Data access/reads and writes:
 4. On changes (and first run), recursively decrypt the tree with the user's private key.
 5. On user data add, save to local sync'd object, see in watch, encrypt with the public key and put into data store.
 
-
 Using a second device/logging in:
 1. Authenticate with the server over SSL.
-2. Recieve pub/priv pair via SSL.
-3. Follow 4-8 above.
+2. Recieve pub/priv pair via SSL and session token
+3. Follow 1-5 above.
 
 Zero-knowledge path:
 1. Follow 1-3 from the above.
@@ -138,7 +142,7 @@ Zero-knowledge upgrade:
 In the server's environment:
 - The server's public/private keys
 
-In the database/and in database backups:
+In the database and in database backups:
 - Each client's default public/private pair, encrypted with the server's private key
 - Zero-knowledge clients' zeropub/zeropair, encrypted with a passphrase that the server doesn't know.
 
@@ -147,6 +151,7 @@ In a regular client's browser memory:
 - The client's default public/private pair
 
 In a regular client's local storage:
+- A session token
 - The client's default public/private pair
 
 In a zero-knowledge client's browser memory:
