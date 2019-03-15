@@ -2,22 +2,21 @@
 
 An authenticated, realtime, offline-first microstorage that's synced across devices.
 
-Built-in support for most common data-sharing patterns, that makes securely managing your user's and app's data simple.
+Built-in, explicit support for most common data-sharing patterns,to make it simple to manage your user and app data with proper security.
 
-Provides multiple data patterns, built-in:
+Provides multiple data patterns, out of the box:
 
 - `inkdb.public` Anonymous, public, read-only.
 - `inkdb.user.app.readonly` User-specific data the app backend has read-write access to. User read-only. Authenticated, encrypted.
 - `inkdb.user.app.readwrite`  User-specific data the app backend has read-write access to. User read-write. Authenticated, encrypted.  (Needs new name?)
-- `inkdb.user.private` User-specific, authenticated, encrypted, read-write data the app backend promises not to access.  Can be zero-knowledge encrypted to make sure that holds true.
-- `inkdb.device_only` Encrypted, read-write storage that never leaves the device. Unlike the above, it is never sync'd.
+- `inkdb.user.private` User-specific data the app backend promises not to access.  Can be zero-knowledge encrypted to make sure that holds true. User read-write.  Authenticated, encrypted, can be zero-knowledge encrypted.
+- `inkdb.device_only` Encrypted, read-write storage that never leaves the device. Unlike the above, it is never synced.
 
 
 Key features:
 - Everything encrypted.  Use whatever backend you'd like.  Your user's data is encrypted.
-- ~Agnostic to your realtime backend.  Supports multiple backends (Kinto, Firestore, DynamoDB, Hasura/Postgres, etc).~
-- Built on Kinto.
-- Bundled authentication backend is Python/Django, but you can override with your own, and it'd be simple to port this to Rails, etc.
+- Agnostic to your backend.  Pluggable backends for storage (Kinto, Firestore, DynamoDB, Hasura/Postgres, etc), and authentication (Django, Rails, etc.)
+- Bundled with Kinto storage backend, and a Python/Django app for authentication.
 
 
 ### Stupid simple syntax.
@@ -34,8 +33,7 @@ inkdb.public.theme.daily_button_color
 > inkdb.user.app.readwrite.foo
 {'error': 'User not authenticated'}
 
-// Authenticates with server.  If user encryption is server-managed,
-// securely fetches user's encryption key, and decrypts.
+// Authenticates with server. Securely fetches user's encryption key, verifies, and decrypts.
 > inkdb.authenticate('myusername', 'mypassword')
 
 > inkdb.user.app.readwrite.foo
@@ -58,6 +56,13 @@ inkdb.public.theme.daily_button_color
 #### Set
 
 ```js
+> inkdb.device_only.myvar = 1
+1
+
+> inkdb.device_only.myvar
+1
+
+
 > inkdb.public.foo = "I want to override this"
 {'error': 'Public is read-only.'}
 
@@ -231,9 +236,10 @@ In transit between server and database, over TLS/SSL:
 
 
 Tech notes:
+- https://github.com/Kinto/kinto-http.py
+- https://github.com/Kinto/kinto.js
 - https://kinto.readthedocs.io/en/latest/tutorials/client-side-encryption.html
 - https://michielbdejong.github.io/kinto-encryption-example/
-- https://github.com/Kinto/kinto-http.py
 
 - https://www.w3.org/TR/WebCryptoAPI/
 - https://caniuse.com/#search=web%20crypto
