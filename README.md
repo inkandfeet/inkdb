@@ -9,7 +9,9 @@ An authenticated, realtime, key-value microstorage that's synced across devices.
 Provides two data enpoints:
 - `inkdb.common` Anonymous, public, read-only.
 - `inkdb.server` Authenticated, encrypted data the server has access to as well. Read-only.
-- `inkdb.user` Authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
+- `inkdb.app.inkshop.account` Authenticated, encrypted data an authorized app has access to as well. Read-only.
+- `inkdb.app.inkshop.private` Authenticated, encrypted data an authorized app has access to as well. Read-write.
+- `inkdb.private` Authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
 
 
 ### Stupid simple syntax.
