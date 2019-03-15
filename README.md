@@ -2,7 +2,7 @@
 
 An authenticated, realtime, offline-first microstorage that's synced across devices.
 
-Built-in, explicit support for most common data-sharing patterns,to make it simple to manage your user and app data with proper security.
+Built-in support for most common data-sharing patterns and makes securely managing your user's and app's data simple.
 
 Provides multiple data patterns, out of the box:
 
