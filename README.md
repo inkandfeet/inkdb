@@ -3,15 +3,15 @@
 An authenticated, realtime, key-value microstorage that's synced across devices.
 
 - Everything encrypted.  Use whatever backed you'd like.  Your user's data is encrypted.
-- Agnostic to your realtime backend.  Supports multiple backends (Firebase, DynamoDB, Hasura/Postgres, etc).
+- ~Agnostic to your realtime backend.  Supports multiple backends (Kinto, Firestore, DynamoDB, Hasura/Postgres, etc).~
+- Built on Kinto.
 - Bundled authentication backend is Python/Django, but you can override with your own, and itd be simple to port this to Rails, etc.
 
-Provides two data enpoints:
-- `inkdb.common` Anonymous, public, read-only.
-- `inkdb.server` Authenticated, encrypted data the server has access to as well. Read-only.
-- `inkdb.app.inkshop.account` Authenticated, encrypted data an authorized app has access to as well. Read-only.
-- `inkdb.app.inkshop.private` Authenticated, encrypted data an authorized app has access to as well. Read-write.
-- `inkdb.private` Authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
+Provides several data enpoints:
+- `inkdb.public` Anonymous, public, read-only.
+- `inkdb.app.readonly` User-specific, authenticated, encrypted data the server has access to as well. Read-only.
+- `inkdb.app.readwrite`  User-specific, authenticated, encrypted data the server has access to as well. Read-write.  (Needs new name?)
+- `inkdb.private` User-specific, authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
 
 
 ### Stupid simple syntax.
@@ -19,23 +19,23 @@ Provides two data enpoints:
 
 #### Get
 ```js
-inkdb.common.foo
+inkdb.public.foo
 "bar"
 
-inkdb.common.theme.daily_button_color
+inkdb.public.theme.daily_button_color
 "#454545"
 ```
 
 #### Set
 
 ```js
-> inkdb.common.foo = "I want to override this"
+> inkdb.public.foo = "I want to override this"
 {'error': 'Common is read-only.'}
 
-> inkdb.common.foo
+> inkdb.public.foo
 "bar"
 
-> inkdb.user.bar
+> inkdb.app.bar
 {'error': 'User not authenticated'}
 
 // Authenticates with server.  If user encryption is server-managed,
@@ -43,20 +43,20 @@ inkdb.common.theme.daily_button_color
 > inkdb.authenticate('myusername', 'mypassword')
 
 
-> inkdb.user
+> inkdb.app
 {
     "foo": "Hi, I'm data."
 }
 
-inkdb.user.bar = "ack";
+inkdb.app.bar = "ack";
 
-> inkdb.user
+> inkdb.app
 {
     "foo": "Hi, I'm data.",
     "bar": "ack",
 }
 
-> inkdb.server.purchases
+> inkdb.app.readonly.purchases
 
 {
     "product-id-1": {
@@ -65,6 +65,16 @@ inkdb.user.bar = "ack";
         url: "https://mycompany.com/products/great-product-1",
     }
 }
+
+> inkdb.app.readonly.purchases.product2.purchased = True
+{'error': 'Vault is read-only'}
+
+> inkdb.app.readwrite.favorite_color = "#454545";
+
+> inkdb.app.readwrite.favorite_color
+"#454545";
+
+
 ```
 
 #### User Registration
@@ -86,20 +96,20 @@ inkdb.change_password('mynewpassword')  // Only works if authenticated, obviousl
 // Authenticates with a server.  If user encryption user-managed, simply fetches the encrypted data.
 > inkdb.authenticate('myusername', 'mypassword')
 
-> inkdb.user.bar
+> inkdb.private.bar
 {"error": "Zero-knowledge encryption enabled, and user vault is not decrypted."}
 
 // Decrypt zero-knowledge encrypted data
-> inkdb.user.decrypt(prompt("What is your vault encryption key"?))
+> inkdb.private.decrypt(prompt("What is your vault encryption key"?))
 
-> inkdb.user.bar
+> inkdb.private.bar
 'ack'
 
 // Enable zero-knowledge
-> inkdb.user.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
+> inkdb.private.enable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 
 // Disable zero-knowledge
-> inkdb.user.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
+> inkdb.private.disable_zero_knowledge_encryption('myzeroknowledgeencryptionkey')
 ```
 
 
@@ -203,9 +213,14 @@ In transit between server and database, over TLS/SSL:
 
 
 Tech notes:
+- https://kinto.readthedocs.io/en/latest/tutorials/client-side-encryption.html
+- https://michielbdejong.github.io/kinto-encryption-example/
+- https://github.com/Kinto/kinto-http.py
+
 - https://www.w3.org/TR/WebCryptoAPI/
 - https://caniuse.com/#search=web%20crypto
 - https://github.com/diafygi/webcrypto-examples
 - https://blog.engelke.com/2015/02/14/deriving-keys-from-passwords-with-webcrypto/
 - https://github.com/brix/crypto-js
 - https://github.com/melanke/Watch.JS/
+
