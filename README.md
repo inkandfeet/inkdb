@@ -8,6 +8,7 @@ An authenticated, realtime, key-value microstorage that's synced across devices.
 
 Provides two data enpoints:
 - `inkdb.common` Anonymous, public, read-only.
+- `inkdb.server` Authenticated, encrypted data the server has access to as well. Read-only.
 - `inkdb.user` Authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
 
 
@@ -51,6 +52,16 @@ inkdb.user.bar = "ack";
 {
     "foo": "Hi, I'm data.",
     "bar": "ack",
+}
+
+> inkdb.server.purchases
+
+{
+    "product-id-1": {
+        purchased_on: 1928312981023,
+        title: "My Great Product",
+        url: "https://mycompany.com/products/great-product-1",
+    }
 }
 ```
 
@@ -114,7 +125,7 @@ Account Creation:
 
 Using a second device/logging in:
 1. Authenticate with the server over SSL.
-2. Recieve pub/priv pair via SSL and session token
+2. Recieve pub/priv pair via SSL and session token (that stays for the time you set.)
 3. Follow 1-5 above.
 
 Data access/reads and writes:
@@ -145,6 +156,8 @@ Zero-knowledge upgrade:
 1. Use current pub/priv pair to recursively decrypt data
 2. Use new zeropub/zeropriv pair to recursively encrypt data
 3. Force-write encrypted data to root node.
+
+
 
 
 ### As a check to the above, the following data is available.  Is this ok?
