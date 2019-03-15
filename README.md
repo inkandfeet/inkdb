@@ -39,10 +39,7 @@ inkdb.public.theme.daily_button_color
 > inkdb.authenticate('myusername', 'mypassword')
 
 > inkdb.user.app.readwrite.foo
-
-{
-    "foo": "Hi, I'm data."
-}
+"Hi, I'm data."
 
 
 > inkdb.user.app.readonly.purchases
@@ -106,8 +103,8 @@ inkdb.user.change_password('mynewpassword')  // Only works if authenticated.
 #### Reset Password
 
 ```js
-inkdb.reset_password('mynewpassword')  
-// Starts email-based password recovery flow.  Won't help with zero-knowledge encrypted private data.
+inkdb.reset_password('mynewpassword')  // Starts email-based password recovery flow. 
+// Won't help with zero-knowledge encrypted private data.
 ```
 
 
