@@ -1,17 +1,22 @@
 # inkdb
 
-An authenticated, realtime, key-value microstorage that's synced across devices.
+An authenticated, realtime, offline-first microstorage that's synced across devices.
 
-- Everything encrypted.  Use whatever backed you'd like.  Your user's data is encrypted.
+Built-in support for most common data-sharing patterns, that makes securely managing your user's and app's data simple.
+
+Provides multiple data patterns, built-in:
+
+- `inkdb.public` Anonymous, public, read-only.
+- `inkdb.user.app.readonly` User-specific data the app backend has read-write access to. User read-only. Authenticated, encrypted.
+- `inkdb.user.app.readwrite`  User-specific data the app backend has read-write access to. User read-write. Authenticated, encrypted.  (Needs new name?)
+- `inkdb.user.private` User-specific, authenticated, encrypted, read-write data the app backend promises not to access.  Can be zero-knowledge encrypted to make sure that holds true.
+- `inkdb.device_only` Encrypted, read-write storage that never leaves the device. Unlike the above, it is never sync'd.
+
+
+- Everything encrypted.  Use whatever backend you'd like.  Your user's data is encrypted.
 - ~Agnostic to your realtime backend.  Supports multiple backends (Kinto, Firestore, DynamoDB, Hasura/Postgres, etc).~
 - Built on Kinto.
-- Bundled authentication backend is Python/Django, but you can override with your own, and itd be simple to port this to Rails, etc.
-
-Provides several data enpoints:
-- `inkdb.public` Anonymous, public, read-only.
-- `inkdb.app.readonly` User-specific, authenticated, encrypted data the server has access to as well. Read-only.
-- `inkdb.app.readwrite`  User-specific, authenticated, encrypted data the server has access to as well. Read-write.  (Needs new name?)
-- `inkdb.private` User-specific, authenticated, encrypted, read-write.  Can be zero-knowledge encrypted.
+- Bundled authentication backend is Python/Django, but you can override with your own, and it'd be simple to port this to Rails, etc.
 
 
 ### Stupid simple syntax.
@@ -24,39 +29,22 @@ inkdb.public.foo
 
 inkdb.public.theme.daily_button_color
 "#454545"
-```
 
-#### Set
-
-```js
-> inkdb.public.foo = "I want to override this"
-{'error': 'Common is read-only.'}
-
-> inkdb.public.foo
-"bar"
-
-> inkdb.app.bar
+> inkdb.user.app.readwrite.foo
 {'error': 'User not authenticated'}
 
 // Authenticates with server.  If user encryption is server-managed,
 // securely fetches user's encryption key, and decrypts.
 > inkdb.authenticate('myusername', 'mypassword')
 
+> inkdb.user.app.readwrite.foo
 
-> inkdb.app
 {
     "foo": "Hi, I'm data."
 }
 
-inkdb.app.bar = "ack";
 
-> inkdb.app
-{
-    "foo": "Hi, I'm data.",
-    "bar": "ack",
-}
-
-> inkdb.app.readonly.purchases
+> inkdb.user.app.readonly.purchases
 
 {
     "product-id-1": {
@@ -66,12 +54,36 @@ inkdb.app.bar = "ack";
     }
 }
 
-> inkdb.app.readonly.purchases.product2.purchased = True
+
+```
+
+#### Set
+
+```js
+> inkdb.public.foo = "I want to override this"
+{'error': 'Public is read-only.'}
+
+> inkdb.public.foo
+"bar"
+
+> inkdb.user.app.readwrite.bar = "ack";
+{'error': 'User not authenticated'}
+
+> inkdb.authenticate('myusername', 'mypassword')
+> inkdb.user.app.readwrite.bar = "ack";
+
+> inkdb.user.app.readwrite
+{
+    "foo": "Hi, I'm data.",
+    "bar": "ack",
+}
+
+> inkdb.user.app.readonly.purchases.product2.purchased = True
 {'error': 'Vault is read-only'}
 
-> inkdb.app.readwrite.favorite_color = "#454545";
+> inkdb.user.app.readwrite.favorite_color = "#454545";
 
-> inkdb.app.readwrite.favorite_color
+> inkdb.user.app.readwrite.favorite_color
 "#454545";
 
 
@@ -87,8 +99,16 @@ inkdb.authenticate('mynewusername', 'mynewpassword')
 #### Change Password
 
 ```js
-inkdb.change_password('mynewpassword')  // Only works if authenticated, obviously.
+inkdb.user.change_password('mynewpassword')  // Only works if authenticated.
 ```
+
+#### Reset Password
+
+```js
+inkdb.reset_password('mynewpassword')  
+// Starts email-based password recovery flow.  Won't help with zero-knowledge encrypted private data.
+```
+
 
 
 #### Zero-knowledge encryption.
