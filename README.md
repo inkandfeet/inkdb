@@ -13,6 +13,7 @@ Provides multiple data patterns, built-in:
 - `inkdb.device_only` Encrypted, read-write storage that never leaves the device. Unlike the above, it is never sync'd.
 
 
+Key features:
 - Everything encrypted.  Use whatever backend you'd like.  Your user's data is encrypted.
 - ~Agnostic to your realtime backend.  Supports multiple backends (Kinto, Firestore, DynamoDB, Hasura/Postgres, etc).~
 - Built on Kinto.
